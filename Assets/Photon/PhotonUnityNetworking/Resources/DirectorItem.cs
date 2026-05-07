@@ -14,11 +14,11 @@ public class DirectorItem : MonoBehaviourPun
     {
         if (!PhotonNetwork.IsMasterClient) return;
 
-        if (other.TryGetComponent(out PhotonView targetView) && other.TryGetComponent(out TankModel tank))
+      /*  if (other.TryGetComponent(out PhotonView targetView) && other.TryGetComponent(out TankModel tank))
         {
             ApplyEffect(targetView);
             PhotonNetwork.Destroy(gameObject);
-        }
+        }*/
     }
 
     private void ApplyEffect(PhotonView targetView)
