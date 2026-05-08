@@ -1,13 +1,20 @@
 using UnityEngine;
 using Photon.Pun;
+using Photon.Realtime;
 using UnitySceneManager = UnityEngine.SceneManagement.SceneManager;
 using UnityScene = UnityEngine.SceneManagement.Scene;
 using UnityLoadSceneMode = UnityEngine.SceneManagement.LoadSceneMode;
 
 public class PlayerSpawner : MonoBehaviourPunCallbacks
 {
+    [Header("Player Prefab")]
     [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private Vector3[] spawnPositions;
+
+    [Header("Spawn Positions by Team")]
+    [SerializeField] private Transform spawnPointTeamA;
+    [SerializeField] private Transform spawnPointTeamB;
+
+    [Header("Settings")]
     [SerializeField] private bool spawnOnStart = true;
     [SerializeField] private float retrySpawnInterval = 0.5f;
 
@@ -26,25 +33,15 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        if (!spawnOnStart)
-        {
-            return;
-        }
-
+        if (!spawnOnStart) return;
         TrySpawnPlayer();
     }
 
     private void Update()
     {
-        if (!spawnOnStart || hasSpawned || !PhotonNetwork.InRoom)
-        {
-            return;
-        }
+        if (!spawnOnStart || hasSpawned || !PhotonNetwork.InRoom) return;
 
-        if (Time.unscaledTime < nextSpawnRetryTime)
-        {
-            return;
-        }
+        if (Time.unscaledTime < nextSpawnRetryTime) return;
 
         nextSpawnRetryTime = Time.unscaledTime + retrySpawnInterval;
         TrySpawnPlayer();
@@ -55,18 +52,35 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
         hasSpawned = false;
         nextSpawnRetryTime = 0f;
 
-        if (!spawnOnStart)
+        if (PhotonNetwork.IsMasterClient)
         {
-            return;
+            PlayerTeamAssigner.AssignTeamsToAllPlayers();
         }
 
+        if (!spawnOnStart) return;
         TrySpawnPlayer();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            PlayerTeamAssigner.AssignTeamToPlayer(newPlayer);
+        }
     }
 
     public override void OnLeftRoom()
     {
         hasSpawned = false;
         nextSpawnRetryTime = 0f;
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        if (targetPlayer.IsLocal && !hasSpawned && changedProps.ContainsKey("Team"))
+        {
+            TrySpawnPlayer();
+        }
     }
 
     private void OnSceneLoaded(UnityScene scene, UnityLoadSceneMode mode)
@@ -87,19 +101,12 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
 
     private void TrySpawnPlayer()
     {
-        if (hasSpawned)
-        {
-            return;
-        }
-
-        if (!PhotonNetwork.InRoom)
-        {
-            return;
-        }
+        if (hasSpawned) return;
+        if (!PhotonNetwork.InRoom) return;
 
         if (playerPrefab == null)
         {
-            Debug.LogError("PlayerSpawner sin playerPrefab asignado.");
+            Debug.LogError("[PlayerSpawner] Sin playerPrefab asignado.");
             return;
         }
 
@@ -109,30 +116,41 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
             return;
         }
 
-        PhotonPlayerSlotRegistry.EnsureLocalStableIdentity();
 
         if (PhotonNetwork.IsMasterClient)
         {
-            int preferredSlotCount = (spawnPositions != null && spawnPositions.Length > 0)
-                ? spawnPositions.Length
-                : 0;
-
-            PhotonPlayerSlotRegistry.EnsureSlotsAssignedForCurrentPlayers(preferredSlotCount);
+            PlayerTeamAssigner.AssignTeamsToAllPlayers();
         }
 
-        PhotonPlayerSlotRegistry.TryApplyLocalPlayerSlotProperty();
 
-        if (!PhotonPlayerSlotRegistry.TryGetLocalStableSlot(out int slotIndex))
+        PlayerTeam? localTeam = PlayerTeamAssigner.GetLocalPlayerTeam();
+        if (localTeam == null)
         {
+
             return;
         }
 
-        Vector3 spawnPosition = (spawnPositions != null && spawnPositions.Length > 0)
-            ? spawnPositions[slotIndex % spawnPositions.Length]
-            : transform.position;
+        Vector3 spawnPosition = GetSpawnPosition(localTeam.Value);
 
         PhotonNetwork.Instantiate(playerPrefab.name, spawnPosition, Quaternion.identity);
         hasSpawned = true;
+
+        Log.Info($"[PlayerSpawner] Spawned en {localTeam.Value} → {spawnPosition}");
+    }
+
+    private Vector3 GetSpawnPosition(PlayerTeam team)
+    {
+        switch (team)
+        {
+            case PlayerTeam.TeamA:
+                return spawnPointTeamA != null ? spawnPointTeamA.position : transform.position;
+
+            case PlayerTeam.TeamB:
+                return spawnPointTeamB != null ? spawnPointTeamB.position : transform.position;
+
+            default:
+                return transform.position;
+        }
     }
 
     private bool HasLocalPlayerInstance()
@@ -141,17 +159,13 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
         for (int i = 0; i < views.Length; i++)
         {
             PhotonView view = views[i];
-            if (view == null || !view.IsMine)
-            {
-                continue;
-            }
+            if (view == null || !view.IsMine) continue;
 
             if (view.gameObject.name.StartsWith(playerPrefab.name))
             {
                 return true;
             }
         }
-
         return false;
     }
 }
