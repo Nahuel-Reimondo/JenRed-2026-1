@@ -11,7 +11,7 @@ public class DirectorPlayer : MonoBehaviourPun
     [SerializeField] private float movSpeed = 20f;
     
     [Header("Team Property")]
-    [SerializeField] private TeamID teamID;
+    [SerializeField] private PlayerTeam teamID;
     
     [Header("Director Tools")]
     [SerializeField] private LayerMask interactionLayer;
