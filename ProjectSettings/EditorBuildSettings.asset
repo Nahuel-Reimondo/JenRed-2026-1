@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/StartingScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/GameScene.unity
+    guid: 0deef62c5417ad942a18b8e777fa71a0
+  - enabled: 1
+    path: Assets/Scenes/RematchScene.unity
+    guid: 03c287b7600a5d04da645d9cb42ed04c
   m_configObjects: {}
