@@ -214,7 +214,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &385931700
 GameObject:
@@ -258,7 +258,7 @@ MonoBehaviour:
   wallPrefab: {fileID: 1376241376981242894, guid: 6e9f3c9a7a77d204dad25f925a81339f, type: 3}
   floorPrefab: {fileID: 8147000330703358964, guid: 1a51dc14eeca9ba43b0b4ac62603875e, type: 3}
   trapPrefab: {fileID: 2252008773988391855, guid: 299ae92fa48d08140bb837246418dcc7, type: 3}
-  spawnPrefab: {fileID: 430032897242997374, guid: 7fbe1c799c7b60a4e9a790aca4b388e9, type: 3}
+  spawnPrefab: {fileID: 8470539351124122453, guid: 6944997421b2c7a41b86da440711c22b, type: 3}
   goalPrefab: {fileID: 6716832729184251722, guid: 759861709c6cf3b46b291a602adaf483, type: 3}
 --- !u!4 &385931702
 Transform:
@@ -273,7 +273,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &519420028
 GameObject:
@@ -327,7 +327,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -351,14 +351,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 8.63, z: -10}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 6.95, y: 10.06, z: 7.91}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1001 &559452851
 PrefabInstance:
   m_ObjectHideFlags: 0
