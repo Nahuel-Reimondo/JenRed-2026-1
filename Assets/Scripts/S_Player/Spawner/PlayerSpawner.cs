@@ -132,7 +132,7 @@ public class PlayerSpawner : MonoBehaviourPunCallbacks
 
         Vector3 spawnPosition = GetSpawnPosition(localTeam.Value);
 
-        PhotonNetwork.Instantiate(playerPrefab.name, spawnPosition, Quaternion.identity);
+        PhotonNetwork.Instantiate(playerPrefab.name, spawnPosition + Vector3.up/2, Quaternion.identity);
         hasSpawned = true;
 
         Log.Info($"[PlayerSpawner] Spawned en {localTeam.Value} → {spawnPosition}");
